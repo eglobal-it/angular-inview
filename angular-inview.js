@@ -149,13 +149,14 @@ function inViewDirective ($parse) {
         scope.$applyAsync(function () {
           inViewExpression(scope, {
             '$inview': info.inView,
-            '$inviewInfo': info
+            '$inviewInfo': info,
+            '$dispose': dispose
           });
         });
       });
 
       // Dispose of reactive chain
-      scope.$on('$destroy', dispose);
+      scope.$on('$destroy', dispose || angular.noop);
     }
   }
 }
@@ -360,9 +361,9 @@ function signalFromEvent (target, event) {
       subscriber(e);
     };
     var el = angular.element(target);
-    event.split(' ').map(e => el[0].addEventListener(e, handler, true));
+    event.split(' ').map(function(e) { el[0].addEventListener(e, handler, true) });
     subscriber.$dispose = function () {
-      event.split(' ').map(e => el[0].removeEventListener(e, handler, true));
+      event.split(' ').map(function(e) { el[0].removeEventListener(e, handler, true) });
     };
   });
 }
